@@ -7,17 +7,17 @@
   - [3.2. Understanding Of `excludeNotForUI`](#32-understanding-of-excludenotforui)
   - [3.3. Interaction Of `excludeNested` And `excludeNotForUI`](#33-interaction-of-excludenested-and-excludenotforui)
 - [4. Proposed Solution](#4-proposed-solution)
-  - [Option 1](#option-1)
-    - [Improve description of `excludeNested`](#improve-description-of-excludenested)
-    - [Improve description of `excludeNotForUI`](#improve-description-of-excludenotforui)
-  - [Option 2](#option-2)
-  - [Option 3](#option-3)
-    - [4.1. Introduction Of `hierarchyMode`](#41-introduction-of-hierarchymode)
-    - [4.2. Deprecation Of `excludeNested` And `excludeNotForUI`](#42-deprecation-of-excludenested-and-excludenotforui)
-    - [4.3. Move `valueset-expand-group` To FHIR Core](#43-move-valueset-expand-group-to-fhir-core)
-      - [4.3.1. If Move To FHIR Core Is Not Possible](#431-if-move-to-fhir-core-is-not-possible)
-    - [4.4. Move `valueset-expand-rules` To FHIR Core](#44-move-valueset-expand-rules-to-fhir-core)
-      - [4.4.1. If Move To FHIR Core Is Not Possible](#441-if-move-to-fhir-core-is-not-possible)
+  - [4.1. Option 1](#41-option-1)
+    - [4.1.1. Improve description of `excludeNested`](#411-improve-description-of-excludenested)
+    - [4.1.2. Improve description of `excludeNotForUI`](#412-improve-description-of-excludenotforui)
+  - [4.2. Option 2](#42-option-2)
+  - [4.3. Option 3](#43-option-3)
+    - [4.3.1. Introduction Of `hierarchyMode`](#431-introduction-of-hierarchymode)
+    - [4.3.2. Deprecation Of `excludeNested` And `excludeNotForUI`](#432-deprecation-of-excludenested-and-excludenotforui)
+    - [4.3.3. Move `valueset-expand-group` To FHIR Core](#433-move-valueset-expand-group-to-fhir-core)
+      - [4.3.3.1. If Move To FHIR Core Is Not Possible](#4331-if-move-to-fhir-core-is-not-possible)
+    - [4.3.4. Move `valueset-expand-rules` To FHIR Core](#434-move-valueset-expand-rules-to-fhir-core)
+      - [4.3.4.1. If Move To FHIR Core Is Not Possible](#4341-if-move-to-fhir-core-is-not-possible)
 - [5. Related Jira-Issues](#5-related-jira-issues)
 
 # 1. Introduction
@@ -115,17 +115,17 @@ Based on the understanding of the parameters `excludeNested` and `excludeNotForU
 
 Based on the given problems and the outlined assumptions, the following solution options are proposed. They will also cover `valueset-expand-group` and `valueset-expand-rules`.
 
-## Option 1
+## 4.1. Option 1
 
 - Keep the parameters `excludeNested` and `excludeNotForUI`
 - Improve the description of the parameters considerably (see below).
 - Add another parameter, e.g. `mode`, which could take the value `UI` in order to make clear, when the extensions `valueset-expand-group` and `valueset-expand-rules` should be applied to the expansion.
 
-### Improve description of `excludeNested`
+### 4.1.1. Improve description of `excludeNested`
 
 Controls whether or not the value set expansion may nest codes or not (i.e. ValueSet.expansion.contains.contains). If set to `true`, the expansion MUST be flat (no nesting). If set to `false`, however, nesting is possible but not required.
 
-### Improve description of `excludeNotForUI`
+### 4.1.2. Improve description of `excludeNotForUI`
 
 Controls whether or not the value set expansion might include
 - codes from the CodeSystem with a `notSelectable` property set to `true` as specified in [http://www.hl7.org/fhir/codesystem.html#status](http://www.hl7.org/fhir/codesystem.html#status) and in [https://hl7.org/fhir/R4/codesystem-concept-properties.html](https://hl7.org/fhir/R4/codesystem-concept-properties.html)
@@ -134,13 +134,13 @@ Controls whether or not the value set expansion might include
 
 The sole purpose of such concepts is helping a user navigate through the list efficiently. If set to `true`, these concepts will be excluded from the expansion. If set to `false`, all concepts will be part of the expansion. In the FHIR Specification itself, the value set expansions are generated with `excludeNotForUI = false`, and the expansions used when generated schema / code etc, or performing validation, are all `excludeNotForUI = true`.
 
-## Option 2
+## 4.2. Option 2
 
 - Take *Option 1* but rename `excludeNotForUI` to `excludeAbstract`.
 
-## Option 3
+## 4.3. Option 3
 
-### 4.1. Introduction Of `hierarchyMode`
+### 4.3.1. Introduction Of `hierarchyMode`
 
 The `$expand` operation should be equipped with a new parameter called `hierarchyMode` of type `code`.
 
@@ -156,11 +156,11 @@ For the scenario, where a CodeSystem's hierarchy and a ValueSet's hierarchy are 
 
 **IMPORTANT:** The description of `valueSetBased` relies on the fact that the current extensions `valueset-expand-group` and `valueset-expand-rules` have been moved to FHIR Core. See subsequent sections.
 
-### 4.2. Deprecation Of `excludeNested` And `excludeNotForUI`
+### 4.3.2. Deprecation Of `excludeNested` And `excludeNotForUI`
 
 With the introduction of the new parameter `hierarchyMode` the two parameters `excludeNested` and `excludeNotForUI` should be deprecated.
 
-### 4.3. Move `valueset-expand-group` To FHIR Core
+### 4.3.3. Move `valueset-expand-group` To FHIR Core
 
 The elementes from this extension should be moved to FHIR Core in order to have all hierarchy related control items in FHIR Core.
 
@@ -173,7 +173,7 @@ The example [value set hierarchical example](https://www.hl7.org/fhir/valueset-e
 
 The `expandGroupingRule` input parameter for the `$expand` operation determines the effect of the concepts in the `grouping`.
 
-#### 4.3.1. If Move To FHIR Core Is Not Possible
+#### 4.3.3.1. If Move To FHIR Core Is Not Possible
 
 If for any reason the movement of the extenstion to FHIR Core is not possible, at least the description of the extension should be updated:
 
@@ -181,7 +181,7 @@ If for any reason the movement of the extenstion to FHIR Core is not possible, a
 
 *Updated **Comment**:* Note that there are inter-relationships between concept status/properties and the way the groups are built; these are described and documented in the (value set hierarchical example)[https://www.hl7.org/fhir/valueset-example-hierarchical.html]. Note that this extension SHOULD be ignored when the `$expand` input parameter `hierarchyMode` is `flat`.
 
-### 4.4. Move `valueset-expand-rules` To FHIR Core
+### 4.3.4. Move `valueset-expand-rules` To FHIR Core
 
 The one element from this extension should be moved to FHIR Core in order to have all hierarchy related control items in FHIR Core.
 
@@ -191,7 +191,7 @@ This one element from the extension could be included into ValueSet's definition
 
 The example [value set hierarchical example](https://www.hl7.org/fhir/valueset-example-hierarchical.html) would have to be adapted accordingly.
 
-#### 4.4.1. If Move To FHIR Core Is Not Possible
+#### 4.3.4.1. If Move To FHIR Core Is Not Possible
 
 If for any reason the movement of the extenstion to FHIR Core is not possible, at least the description of the extension should be updated:
 
